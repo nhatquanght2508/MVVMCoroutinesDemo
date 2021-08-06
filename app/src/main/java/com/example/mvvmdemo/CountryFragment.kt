@@ -1,5 +1,6 @@
 package com.example.mvvmdemo
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,52 +11,48 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mvvmdemo.adapter.FeedAdapter
+import com.example.mvvmdemo.adapter.CountryAdapter
 import com.example.mvvmdemo.viewModel.MainActivityViewModel
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FeedFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class FeedFragment : Fragment() {
-
-    lateinit var feedAdapter: FeedAdapter
+class CountryFragment(private val activity: Activity) : Fragment() {
+    lateinit var countryAdapter: CountryAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_feed, container, false)
+        val view = inflater.inflate(R.layout.fragment_country, container, false)
         initAdapter(view)
         initViewModel()
         return view
     }
 
     private fun initAdapter(view: View?) {
-        val rcvFeed = view?.findViewById<RecyclerView>(R.id.rcv_feed)
-        rcvFeed?.layoutManager = LinearLayoutManager(activity)
+        val rcvCountry = view?.findViewById<RecyclerView>(R.id.rcv_country)
+        rcvCountry?.layoutManager = LinearLayoutManager(activity)
         val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        rcvFeed?.addItemDecoration(decoration)
-        feedAdapter = FeedAdapter()
-        rcvFeed?.adapter = feedAdapter
+        rcvCountry?.addItemDecoration(decoration)
+        countryAdapter = CountryAdapter(activity)
+        rcvCountry?.adapter = countryAdapter
     }
 
     private fun initViewModel() {
         val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        viewModel.getFeedLiveDataObserver().observe(viewLifecycleOwner, {
+        viewModel.getCountryLiveDataObserver().observe(viewLifecycleOwner, {
             if (it != null) {
-                feedAdapter.setUpdatedData(it.items)
+                countryAdapter.setUpdatedData(it)
             } else {
                 Toast.makeText(activity, "Error in getting data", Toast.LENGTH_LONG).show()
             }
         })
-        viewModel.feedApiCall()
+        viewModel.countryApiCall()
     }
 
     companion object {
         @JvmStatic
-        fun newInstance() =
-            FeedFragment().apply {
+        fun newInstance(activity: Activity) =
+            CountryFragment(activity).apply {
+                arguments = Bundle().apply {
+                }
             }
     }
 }
