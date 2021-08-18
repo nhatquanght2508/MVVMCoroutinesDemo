@@ -10,8 +10,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mvvmdemo.Repository.MainRepository
+import com.example.mvvmdemo.ViewModel.MainViewModel
+import com.example.mvvmdemo.ViewModel.MainViewModelFactory
 import com.example.mvvmdemo.adapter.FeedAdapter
-import com.example.mvvmdemo.viewModel.MainActivityViewModel
+import com.example.mvvmdemo.network.RetrofitService
 
 /**
  * A simple [Fragment] subclass.
@@ -21,6 +24,7 @@ import com.example.mvvmdemo.viewModel.MainActivityViewModel
 class FeedFragment : Fragment() {
 
     lateinit var feedAdapter: FeedAdapter
+    lateinit var viewModel: MainViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,15 +45,24 @@ class FeedFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        viewModel.getFeedLiveDataObserver().observe(viewLifecycleOwner, {
-            if (it != null) {
-                feedAdapter.setUpdatedData(it.items)
-            } else {
-                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_LONG).show()
+        val retrofitService = RetrofitService.getInstanceFeed()
+        val mainRepository = MainRepository(retrofitService)
+        viewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(mainRepository)
+        ).get(MainViewModel::class.java)
+        viewModel.feedList.observe(viewLifecycleOwner, {
+            feedAdapter.setUpdatedData(it.items)
+        })
+
+        viewModel.errorMes.observe(viewLifecycleOwner,{
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
+        viewModel.loading.observe(viewLifecycleOwner,{
+            if (it){
             }
         })
-        viewModel.feedApiCall()
+        viewModel.getAllFeed()
     }
 
     companion object {

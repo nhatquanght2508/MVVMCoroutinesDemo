@@ -11,11 +11,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mvvmdemo.Repository.MainRepository
+import com.example.mvvmdemo.ViewModel.MainViewModel
+import com.example.mvvmdemo.ViewModel.MainViewModelFactory
 import com.example.mvvmdemo.adapter.CountryAdapter
-import com.example.mvvmdemo.viewModel.MainActivityViewModel
+import com.example.mvvmdemo.network.RetrofitService
 
 class CountryFragment(private val activity: Activity) : Fragment() {
     lateinit var countryAdapter: CountryAdapter
+    lateinit var viewModel: MainViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,15 +40,23 @@ class CountryFragment(private val activity: Activity) : Fragment() {
     }
 
     private fun initViewModel() {
-        val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        viewModel.getCountryLiveDataObserver().observe(viewLifecycleOwner, {
-            if (it != null) {
-                countryAdapter.setUpdatedData(it)
-            } else {
-                Toast.makeText(activity, "Error in getting data", Toast.LENGTH_LONG).show()
+        val retrofitService = RetrofitService.getInstanceCountry()
+        val mainRepository = MainRepository(retrofitService)
+        viewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(mainRepository)
+        ).get(MainViewModel::class.java)
+        viewModel.countryList.observe(viewLifecycleOwner, {
+            countryAdapter.setUpdatedData(it)
+        })
+        viewModel.errorMes.observe(viewLifecycleOwner,{
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
+        viewModel.loading.observe(viewLifecycleOwner,{
+            if (it){
             }
         })
-        viewModel.countryApiCall()
+        viewModel.getAllCountry()
     }
 
     companion object {

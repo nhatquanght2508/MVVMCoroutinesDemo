@@ -2,6 +2,7 @@ package com.example.mvvmdemo
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -10,7 +11,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setupCountryFragment()
+        findViewById<Button>(R.id.btnFeed).setOnClickListener(this)
+        findViewById<Button>(R.id.btnCountry).setOnClickListener(this)
     }
 
     private fun setupFeedFragment() {
@@ -18,6 +20,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val fragmentManager: FragmentManager = supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.container, feedFragment)
+        fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }
 
@@ -26,6 +29,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val fragmentManager: FragmentManager = supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.container, countryFragment)
+        fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }
 
