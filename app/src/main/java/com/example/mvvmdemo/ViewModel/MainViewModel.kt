@@ -20,6 +20,7 @@ class MainViewModel constructor(private val mainRepository: MainRepository) : Vi
     val loading = MutableLiveData<Boolean>()
     fun getAllCountry() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            loading.postValue(true)
             val response = mainRepository.getAllCountry()
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
@@ -34,6 +35,7 @@ class MainViewModel constructor(private val mainRepository: MainRepository) : Vi
 
     fun getAllFeed(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            loading.postValue(true)
             val response = mainRepository.getAllFeed()
             withContext(Dispatchers.Main){
                 feedList.postValue(response)

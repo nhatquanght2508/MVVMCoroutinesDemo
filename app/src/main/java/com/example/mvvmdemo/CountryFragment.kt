@@ -47,6 +47,7 @@ class CountryFragment(private val activity: Activity) : Fragment() {
             MainViewModelFactory(mainRepository)
         ).get(MainViewModel::class.java)
         viewModel.countryList.observe(viewLifecycleOwner, {
+            (activity as MainActivity).handleProgressBar(false)
             countryAdapter.setUpdatedData(it)
         })
         viewModel.errorMes.observe(viewLifecycleOwner,{
@@ -54,6 +55,7 @@ class CountryFragment(private val activity: Activity) : Fragment() {
         })
         viewModel.loading.observe(viewLifecycleOwner,{
             if (it){
+                (activity as MainActivity).handleProgressBar(true)
             }
         })
         viewModel.getAllCountry()

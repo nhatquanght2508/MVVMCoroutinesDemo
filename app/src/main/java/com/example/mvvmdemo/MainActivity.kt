@@ -2,17 +2,20 @@ package com.example.mvvmdemo
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.mvvmdemo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<Button>(R.id.btnFeed).setOnClickListener(this)
-        findViewById<Button>(R.id.btnCountry).setOnClickListener(this)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.btnFeed.setOnClickListener(this)
+        binding.btnCountry.setOnClickListener(this)
     }
 
     private fun setupFeedFragment() {
@@ -42,5 +45,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 setupCountryFragment()
             }
         }
+    }
+
+    fun handleProgressBar(enable: Boolean) {
+        if (enable) {
+            binding.progressBar.visibility = View.VISIBLE
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        } else {
+            binding.progressBar.visibility = View.GONE
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        binding.progressBar.visibility = View.GONE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -25,6 +26,7 @@ class FeedFragment : Fragment() {
 
     lateinit var feedAdapter: FeedAdapter
     lateinit var viewModel: MainViewModel
+    lateinit var progressBar: ProgressBar
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,6 +54,7 @@ class FeedFragment : Fragment() {
             MainViewModelFactory(mainRepository)
         ).get(MainViewModel::class.java)
         viewModel.feedList.observe(viewLifecycleOwner, {
+            (activity as MainActivity).handleProgressBar(false)
             feedAdapter.setUpdatedData(it.items)
         })
 
@@ -60,6 +63,7 @@ class FeedFragment : Fragment() {
         })
         viewModel.loading.observe(viewLifecycleOwner,{
             if (it){
+                (activity as MainActivity).handleProgressBar(true)
             }
         })
         viewModel.getAllFeed()
